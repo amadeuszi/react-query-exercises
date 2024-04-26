@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { QueryKeys } from "../../reactQuery/QueryKeys";
 
 export enum State {
   ALL = 'all',
@@ -15,14 +16,24 @@ type Todo = {
 type Todos = ReadonlyArray<Todo>
 
 export const useFetchTodos = (state: State) => {
-  const todosQuery = useQuery({
-    queryKey: ['todos', state],
+  const queryClient = useQueryClient();
+
+  const todosQuery = useQuery<Todos, unknown, Todos, [QueryKeys, State]>({
+    queryKey: [QueryKeys.GET_TODOS, state],
     queryFn: async () => {
       const response = await fetch(`http://localhost:3000/v1/todos?state=${state}`)
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
       return response.json() as Promise<Todos>
+    },
+    initialData: () => {
+      const previousData = queryClient.getQueriesData<Todos>({ queryKey: [QueryKeys.GET_TODOS] });
+      if (previousData.length === 0) {
+        return undefined
+      }
+      const [, lastDisplayedTodos] = previousData[previousData.length - 1];
+      return lastDisplayedTodos;
     }
   });
 
