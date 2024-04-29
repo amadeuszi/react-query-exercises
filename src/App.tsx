@@ -1,5 +1,5 @@
 import React from 'react';
-import { TodoList } from "./components/todos/TodoList";
+import { TodoList } from "./exercises/exercise1/TodoList";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 

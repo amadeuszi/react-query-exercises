@@ -1,5 +1,8 @@
-import { State, useFetchTodos } from "./useFetchTodos";
+import { State, Todos, useFetchTodos } from "./useFetchTodos";
 import { useState } from "react";
+import { EditTodo } from "../exercise2/EditTodo";
+
+const identityFunction = <T,>(value: T): T => value
 
 export const TodoList = () => {
   const [state, setState] = useState<State>(State.ALL)
@@ -7,13 +10,15 @@ export const TodoList = () => {
     todos,
     isLoading,
     isFetching,
-  } = useFetchTodos(state)
+  } = useFetchTodos({ state, select: identityFunction<Todos> })
 
   return (
     <div>
       <h1>Todo List</h1>
-      {isLoading && <p>Loading...</p>}
-      {isFetching && <p>Fetching...</p>}
+      <div style={{ height: 100 }}>
+        {isLoading && <p>Loading...</p>}
+        {isFetching && <p>Fetching...</p>}
+      </div>
       <div>
         Filter by state:
       </div>
@@ -21,10 +26,11 @@ export const TodoList = () => {
       <button onClick={() => setState(State.OPEN)}>Open</button>
       <button onClick={() => setState(State.DONE)}>Done</button>
       <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.state} - {todo.id} - {todo.description}</li>
+        {todos?.map((todo) => (
+          <li key={todo.id}>{todo.id} - {todo.state} - {todo.description}</li>
         ))}
       </ul>
+      <EditTodo />
     </div>
   );
 }
